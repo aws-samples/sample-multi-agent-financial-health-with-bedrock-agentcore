@@ -1,0 +1,115 @@
+# Configuración de AgentCore
+# Este archivo será generado por `agentcore create` cuando se instale el CLI.
+#
+# La fuente de verdad del guardrail es el CDK:
+# infrastructure/infrastructure/infrastructure_stack.py (CfnGuardrail).
+
+name: financialhealth
+description: Asistente financiero para optimización de deudas en Perú
+version: 0.1.0
+
+# Runtime configuration
+runtime:
+  region: us-east-1
+  memory_size: 2048
+  timeout: 300
+  streaming: true
+
+# Memory configuration
+memory:
+  enabled: true
+  # KMS key ID se obtiene del output del CDK stack
+  # Ejecutar: aws cloudformation describe-stacks --stack-name InfrastructureStack --query "Stacks[0].Outputs[?OutputKey=='MemoryKeyId'].OutputValue" --output text
+  kms_key_id: ${KMS_KEY_ID}
+  
+  # Estrategias de memoria
+  strategies:
+    # Estrategia 1: User Preference - Guarda preferencias del usuario
+    - type: user_preference
+      enabled: true
+      config:
+        ttl_days: 90  # Preferencias duran 90 días
+        max_items: 50  # Máximo 50 preferencias por usuario
+        
+    # Estrategia 2: Semantic - Búsqueda semántica en conversaciones previas
+    - type: semantic
+      enabled: true
+      config:
+        embedding_model: amazon.titan-embed-text-v2:0
+        max_results: 5  # Top 5 resultados más relevantes
+        similarity_threshold: 0.7  # Umbral de similitud
+        ttl_days: 30  # Conversaciones duran 30 días
+        
+    # Estrategia 3: Summary - Resúmenes de sesiones anteriores
+    - type: summary
+      enabled: true
+      config:
+        summary_model: anthropic.claude-haiku-4-5-20251001-v1:0
+        max_tokens: 500  # Resumen máximo de 500 tokens
+        trigger_messages: 10  # Resumir cada 10 mensajes
+        ttl_days: 60  # Resúmenes duran 60 días
+
+# Session management
+session:
+  enabled: true
+  actor_id_source: email  # Usar email como identificador
+  timeout_minutes: 30  # Sesión expira después de 30 min de inactividad
+  max_history: 50  # Mantener últimos 50 mensajes en contexto
+
+# Observability
+observability:
+  enabled: true
+  cloudwatch_logs: true
+  log_level: INFO
+  xray_tracing: true
+  
+  # ADOT (AWS Distro for OpenTelemetry)
+  otel:
+    enabled: true
+    endpoint: ${OTEL_ENDPOINT}
+    service_name: financial-health-agent
+    
+  # Métricas personalizadas
+  metrics:
+    - name: agent_invocations
+      type: counter
+      description: Número de invocaciones por agente
+    - name: agent_latency
+      type: histogram
+      description: Latencia de respuesta por agente
+    - name: tokens_consumed
+      type: counter
+      description: Tokens consumidos por sesión
+    - name: bedrock_cost
+      type: gauge
+      description: Costo estimado de llamadas a Bedrock
+
+# Guardrails
+guardrails:
+  enabled: true
+  # Guardrail ID se configura en Fase 4
+  guardrail_id: ${GUARDRAIL_ID}
+  guardrail_version: DRAFT
+  
+  # Configuración de filtros
+  filters:
+    - type: content
+      enabled: true
+      categories:
+        - HATE
+        - INSULTS
+        - SEXUAL
+        - VIOLENCE
+        - MISCONDUCT
+    - type: pii
+      enabled: true
+      action: ANONYMIZE
+      entities:
+        - CREDIT_DEBIT_NUMBER
+        - EMAIL
+        - PHONE
+        - ADDRESS
+
+# Entry point
+entry_point: agents/orquestador.py
+handler: orquestador_handler

@@ -1,0 +1,10 @@
+Multi-agent financial health analysis with Amazon Bedrock AgentCore
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+This software is licensed under the MIT No Attribution license (MIT-0).
+See the LICENSE file for the full license text.
+
+This product includes third-party software obtained at build time from public
+package registries (PyPI and npm). No third-party source code is vendored or
+redistributed in this repository. A summary of those dependencies and their
+licenses is provided in THIRD-PARTY-LICENSES.

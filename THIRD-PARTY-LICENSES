@@ -1,0 +1,155 @@
+THIRD-PARTY LICENSES
+====================
+
+This sample is licensed under MIT No Attribution (MIT-0); see LICENSE.
+
+This file is informational. It records the third-party dependency closure of
+this sample and the license each dependency is distributed under, so that
+consumers can evaluate the sample before deploying it.
+
+Scope and method
+----------------
+No third-party source code is vendored, bundled, or redistributed in this
+repository. Every dependency below is declared by version and fetched at
+install/build time from its public registry (PyPI or npm). This repository
+contains no `vendor/`, `third-party/`, or checked-in `node_modules/` tree, and
+no minified or pre-built third-party bundles.
+
+The audit below was produced from:
+
+  * backend/requirements.txt          resolved with `pip-licenses` over the
+                                      full transitive closure (87 packages)
+  * infrastructure/requirements.txt   2 direct packages
+  * frontend/package-lock.json        `license` metadata for the full locked
+                                      tree (536 packages; 335 of them are
+                                      production/runtime, the rest build-time)
+
+Result: every dependency is under a permissive, redistribution-friendly
+license. There are no GPL, AGPL, LGPL, SSPL, BUSL, CC-BY-NC, or other
+copyleft/source-reciprocal or field-of-use-restricted licenses in the runtime
+closure. Two entries warrant an explicit note; see "Notes" at the end.
+
+
+1. Backend — Python (backend/requirements.txt)
+----------------------------------------------
+Direct dependencies:
+
+  Package                            Version    License
+  ---------------------------------- ---------- --------------
+  strands-agents                     1.48.0     Apache-2.0
+  bedrock-agentcore                  1.18.1     Apache-2.0
+  bedrock-agentcore-starter-toolkit  0.3.10     Apache-2.0
+  boto3                              1.43.63    Apache-2.0
+  botocore                           1.43.63    Apache-2.0
+  pyarrow                            23.0.1     Apache-2.0
+  anthropic                          0.117.0    MIT
+  pydantic                           2.13.4     MIT
+  pyyaml                             6.0.3      MIT
+  flask-cors                         6.0.5      MIT
+  flask                              3.1.3      BSD-3-Clause
+  python-dotenv                      1.2.2      BSD-3-Clause
+
+Full transitive closure (87 packages), by license:
+
+    37  MIT
+    20  Apache-2.0
+    12  BSD-3-Clause
+     5  BSD (2-Clause or 3-Clause, declared as "BSD License")
+     3  BSD-2-Clause
+     1  0BSD                          (chardet)
+     1  Apache-2.0 / BSD              (python-dateutil, dual)
+     1  Apache-2.0 / MIT              (sniffio, dual)
+     1  Apache-2.0 OR BSD-2-Clause    (packaging)
+     1  Apache-2.0 OR BSD-3-Clause    (cryptography)
+     1  ISC                           (shellingham)
+     1  MIT-0                         (cffi)
+     1  MITNFA                        (prance)
+     1  MPL-2.0                       (certifi)  -- see Notes
+     1  PSF-2.0                       (typing_extensions)
+
+
+2. Infrastructure — Python (infrastructure/requirements.txt)
+------------------------------------------------------------
+  Package                            Version    License
+  ---------------------------------- ---------- --------------
+  aws-cdk-lib                        2.263.0    Apache-2.0
+  constructs                         10.8.1     Apache-2.0
+
+
+3. Frontend — npm (frontend/package.json)
+-----------------------------------------
+Direct production dependencies:
+
+  Package                            Version    License
+  ---------------------------------- ---------- --------------
+  @aws-amplify/ui-react              6.15.1     Apache-2.0
+  aws-amplify                        6.16.2     Apache-2.0
+  react                              19.2.0     MIT
+  react-dom                          19.2.0     MIT
+  react-markdown                     10.1.0     MIT
+  recharts                           3.7.0      MIT
+  remark-breaks                      4.0.0      MIT
+  remark-gfm                         4.0.1      MIT
+
+Production/runtime closure (335 packages), by license:
+
+   216  MIT
+    95  Apache-2.0
+    20  ISC
+     2  BSD-3-Clause
+     1  0BSD                          (tslib)
+     1  MIT AND ISC                   (victory-vendor)  -- see Notes
+
+Build-time-only closure (the remaining 201 locked packages: TypeScript,
+Vite, ESLint and their transitive dependencies) adds only MIT, Apache-2.0,
+ISC, BSD-2-Clause, BSD-3-Clause, plus:
+
+     1  Python-2.0                    (argparse, build-time only)
+     1  CC-BY-4.0                     (caniuse-lite, build-time only)
+                                                        -- see Notes
+
+These build-time packages are not shipped in the deployed frontend bundle.
+
+
+Notes
+-----
+certifi (MPL-2.0)
+  Mozilla Public License 2.0 is a file-level weak copyleft license. certifi is
+  consumed as an unmodified published wheel (a transitive dependency of
+  `requests`/`botocore`); no certifi source is modified or redistributed by
+  this repository, so the MPL-2.0 source-disclosure obligation is not
+  triggered. MPL-2.0 is compatible with distributing this sample under MIT-0.
+
+victory-vendor (MIT AND ISC)
+  A transitive dependency of `recharts`. It re-publishes a subset of the D3
+  modules (d3-array, d3-scale, d3-shape, and related) so that Recharts can
+  depend on CommonJS builds. The "MIT AND ISC" identifier reflects the mix of
+  licenses of the bundled D3 modules; both are permissive and require only
+  that their copyright and permission notices be preserved, which the
+  published package does.
+
+caniuse-lite (CC-BY-4.0)
+  A browser-compatibility dataset used by `browserslist` during the Vite
+  build. It is a build-time-only dependency and is not included in the
+  deployed frontend bundle, so the CC-BY-4.0 attribution obligation is not
+  triggered by distribution of this sample. It is listed here for
+  completeness. Attribution: caniuse-lite is derived from the "Can I use"
+  support tables (https://caniuse.com), by Alexis Deveria, licensed
+  CC BY 4.0.
+
+Amazon Bedrock foundation models
+  This sample invokes Anthropic Claude models through Amazon Bedrock. Those
+  models are not dependencies of this repository and are not redistributed by
+  it; their use is governed by the Amazon Bedrock service terms and the
+  applicable model provider's terms, not by this repository's license.
+
+
+Reproducing this audit
+----------------------
+  # Backend
+  python3 -m venv .venv-audit
+  .venv-audit/bin/pip install pip-licenses -r backend/requirements.txt
+  .venv-audit/bin/pip-licenses --format=markdown --with-urls --order=license
+
+  # Frontend (no install required; reads locked license metadata)
+  cd frontend && npm ls --all --json    # or inspect package-lock.json

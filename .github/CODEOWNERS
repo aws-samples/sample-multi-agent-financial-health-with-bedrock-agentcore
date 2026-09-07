@@ -1,0 +1,11 @@
+# Code owners for this repository.
+#
+# GitHub requests a review from these owners automatically on every pull request.
+# They are also the named owners of the response commitment for this sample:
+# an issue or pull request is seen within 1 business day, responded to within
+# 1 week, and resolved within 3 weeks.
+#
+# An owner must have write access to this repository, otherwise GitHub ignores
+# the entry and requests no review.
+
+*       @imdaub @mgcasas-aws
