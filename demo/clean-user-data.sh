@@ -3,8 +3,16 @@
 # SPDX-License-Identifier: MIT-0
 # ============================================================
 # Limpieza de datos de un usuario
+#
 # Uso: bash demo/clean-user-data.sh <usuario_id>
-# Ejemplo: bash demo/clean-user-data.sh 319bd5d0-0051-7070-8cc0-d003899a042f
+#
+# Borra los datos del usuario en las cuatro tablas de DynamoDB, sus PDFs en S3,
+# y sus registros en AgentCore Memory. El usuario de Cognito NO se borra.
+#
+# Requiere estas variables de entorno, todas presentes en cdk-outputs.json o en
+# SSM bajo /financial-health/:
+#   AWS_REGION  ESTADOS_TABLE  HASHES_TABLE  HISTORY_TABLE  JOBS_TABLE
+#   S3_PDFS_BUCKET  MEMORY_ID
 # ============================================================
 
 set -e
@@ -29,8 +37,9 @@ USER_ID="$1"
 if [ -z "$USER_ID" ]; then
   echo "Uso: bash demo/clean-user-data.sh <usuario_id>"
   echo ""
-  echo "Usuarios conocidos:"
-  echo "  Gaston: 319bd5d0-0051-7070-8cc0-d003899a042f"
+  echo "El usuario_id es el 'sub' de Cognito. Para obtenerlo:"
+  echo "  aws cognito-idp admin-get-user --user-pool-id <POOL> --username <EMAIL> \\"
+  echo "    --query 'UserAttributes[?Name==\`sub\`].Value' --output text"
   exit 1
 fi
 
@@ -49,7 +58,7 @@ delete_by_userid() {
     --expression-attribute-values "{\":uid\":{\"S\":\"$USER_ID\"}}" \
     --profile "$PROFILE" --region "$REGION" --output json 2>/dev/null)
 
-  COUNT=$(echo "$ITEMS" | python -c "import sys,json; print(json.load(sys.stdin)['Count'])")
+  COUNT=$(echo "$ITEMS" | python3 -c "import sys,json; print(json.load(sys.stdin)['Count'])")
 
   if [ "$COUNT" = "0" ]; then
     echo "   (0 items)"
@@ -57,7 +66,7 @@ delete_by_userid() {
   fi
 
   echo "   $COUNT items — borrando..."
-  echo "$ITEMS" | python -c "
+  echo "$ITEMS" | python3 -c "
 import sys, json, subprocess, os
 data = json.load(sys.stdin)
 env = {**os.environ, 'MSYS_NO_PATHCONV': '1'}
@@ -81,7 +90,7 @@ delete_jobs() {
     --projection-expression "job_id" \
     --profile "$PROFILE" --region "$REGION" --output json 2>/dev/null)
 
-  COUNT=$(echo "$ITEMS" | python -c "import sys,json; print(json.load(sys.stdin)['Count'])")
+  COUNT=$(echo "$ITEMS" | python3 -c "import sys,json; print(json.load(sys.stdin)['Count'])")
 
   if [ "$COUNT" = "0" ]; then
     echo "   (0 items)"
@@ -89,7 +98,7 @@ delete_jobs() {
   fi
 
   echo "   $COUNT items — borrando..."
-  echo "$ITEMS" | python -c "
+  echo "$ITEMS" | python3 -c "
 import sys, json, subprocess, os
 data = json.load(sys.stdin)
 env = {**os.environ, 'MSYS_NO_PATHCONV': '1'}
@@ -121,7 +130,7 @@ fi
 
 # --- AgentCore Memory (STM: sesiones+eventos, LTM: preferences/facts/summaries) ---
 echo ">> AgentCore Memory: $MEMORY_ID (actor=$USER_ID)"
-AWS_PROFILE="$PROFILE" AWS_REGION="$REGION" python -c "
+AWS_PROFILE="$PROFILE" AWS_REGION="$REGION" python3 -c "
 import boto3, sys
 
 memory_id = '$MEMORY_ID'
