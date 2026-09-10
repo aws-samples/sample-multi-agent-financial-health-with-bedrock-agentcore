@@ -1,0 +1,9 @@
+# Dependency for generate-statements.py, which builds the synthetic PDF
+# statements in demo/pdfs/. Nothing else in this project needs it, so it stays
+# out of backend/requirements.txt.
+#
+#   pip install -r demo/requirements.txt
+#   python3 demo/generate-statements.py
+#
+# Pinned to match the rest of the project.
+reportlab==4.4.4

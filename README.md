@@ -434,8 +434,13 @@ The `demo/pdfs/` directory holds synthetic credit card statements. Use them to
 test the application without real data. The names of the financial institutions
 and the merchants are invented.
 
-To generate the files again, run `python3 demo/generate-statements.py`. To upload
-them, use the **Documents** tab.
+To generate the files again, install the generator dependency and run the script.
+To upload them, use the **Documents** tab.
+
+```bash
+pip install -r demo/requirements.txt
+python3 demo/generate-statements.py
+```
 
 The statements themselves are in Spanish, because the extractor agent reads Latin
 American statement layouts.

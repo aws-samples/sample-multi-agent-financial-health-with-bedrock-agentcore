@@ -440,9 +440,13 @@ El directorio `demo/pdfs/` contiene estados de cuenta sintéticos de tarjeta de
 crédito. Úsalos para probar la aplicación sin datos reales. Los nombres de las
 entidades financieras y de los comercios son inventados.
 
-Para generar los archivos de nuevo, ejecuta
-`python3 demo/generate-statements.py`. Para subirlos, usa la pestaña
-**Documentos**.
+Para generar los archivos de nuevo, instala la dependencia del generador y
+ejecuta el script. Para subirlos, usa la pestaña **Documentos**.
+
+```bash
+pip install -r demo/requirements.txt
+python3 demo/generate-statements.py
+```
 
 | Usuario | Tarjetas (entidades inventadas) |
 |---|---|
