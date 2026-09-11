@@ -11,6 +11,10 @@ interactivos.
 El sistema usa [Amazon Bedrock AgentCore](https://aws.amazon.com/bedrock/agentcore/)
 y el [Strands Agents SDK](https://github.com/strands-agents/sdk-python).
 
+El blog de AWS en español explica las decisiones de diseño detrás de este
+ejemplo. Lee
+[Construye un sistema multi-agente de salud financiera con Amazon Bedrock AgentCore](https://aws.amazon.com/es/blogs/aws-spanish/construye-un-sistema-multi-agente-de-salud-financiera-con-amazon-bedrock-agentcore/).
+
 > **PRECAUCIÓN:** Elimina los recursos cuando ya no los necesites. Este proyecto
 > crea recursos de AWS que generan cargos en tu cuenta. Consulta
 > [Limpieza](#limpieza) y la [calculadora de precios de AWS](https://calculator.aws/).

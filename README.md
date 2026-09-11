@@ -9,6 +9,10 @@ expenses. Then it builds an optimized payment plan with interactive charts.
 The system uses [Amazon Bedrock AgentCore](https://aws.amazon.com/bedrock/agentcore/)
 and the [Strands Agents SDK](https://github.com/strands-agents/sdk-python).
 
+For the design decisions behind this sample, read
+[Construye un sistema multi-agente de salud financiera con Amazon Bedrock AgentCore](https://aws.amazon.com/es/blogs/aws-spanish/construye-un-sistema-multi-agente-de-salud-financiera-con-amazon-bedrock-agentcore/)
+on the AWS Spanish blog. The post is in Spanish.
+
 > **CAUTION:** Delete the resources when you no longer need them. This project
 > creates AWS resources that add charges to your account. See
 > [Cleanup](#cleanup) and the [AWS Pricing Calculator](https://calculator.aws/).
